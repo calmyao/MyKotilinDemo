@@ -1,15 +1,17 @@
 package com.minhuizhu.mykotlin.ui.activities
 
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.Toolbar
 import com.minhuizhu.mykotlin.R
 import com.minhuizhu.mykotlin.domain.commands.RequestForecastCommand
 import com.minhuizhu.mykotlin.extension.DelegatesExt
+import com.minhuizhu.mykotlin.ui.ForecastListAdapter
 import kotlinx.android.synthetic.main.activity_main.*
 import org.jetbrains.anko.async
 import org.jetbrains.anko.find
+import org.jetbrains.anko.startActivity
 import org.jetbrains.anko.uiThread
 
 class MainActivity : AppCompatActivity(),ToolbarManager {
@@ -32,8 +34,9 @@ class MainActivity : AppCompatActivity(),ToolbarManager {
     private fun loadForecast() =async(){
         val result= RequestForecastCommand(zipCode).execute()
         uiThread {
-            val adapter=ForecastListAdapter(result){
-
+            val adapter= ForecastListAdapter(result){
+                startActivity<DetailActivity>(DetailActivity.ID to it.id,
+                        DetailActivity.CITY_NAME to result.city)
             }
             forecastList.adapter=adapter
             toolbarTitle="${result.city}(${result.country})"
